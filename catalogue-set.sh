@@ -27,13 +27,11 @@ if [ $USERID -ne 0 ]; then
     exit 1 #failure is other than 0 
 fi 
 
-
 ########### NodeJS #######################
 dnf module disable nodejs -y &>>$LOG_FILE
 dnf module enable nodejs:20 -y &>>$LOG_FILE
 dnf install nodejs -y &>>$LOG_FILE
 echo -e "Installing NodeJS 20 ... $G SUCCESS $N"
-
 
 id roboshop &>>$LOG_FILE
 if [ $? -ne 0]; then
@@ -43,36 +41,17 @@ else
 fi 
 
 mkdir -p /app 
-
-
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOG_FILE
-
 cd /app 
-
-
 rm -rf /app/*
-
-
 unzip /tmp/catalogue.zip &>>$LOG_FILE
-
-
 npm install &>>$LOG_FILE
-
-
 cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service   ### Full path 
-
-
 systemctl daemon-reload
 systemctl enable catalogue &>>$LOG_FILE
 echo -e "Catalogue Application Set up ... $G SUCCESS $N"
-
-
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo  ## add full path for smoother execution
-
-
 dnf install mongodb-mongoshfgh -y &>>$LOG_FILE
-
-
 INDEX=$(mongosh mongodb.daws86sd.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
 if [ $INDEX -le 0 ]; then
     mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
