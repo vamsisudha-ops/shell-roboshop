@@ -12,7 +12,7 @@ fi
 LOGS_FOLDER="/var/log/shell-script"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log  --> giving full path here 
-
+START_TIME=$(date +%s)
 mkdir -p $LOGS_FOLDER   # -p checks already directory is there or not, if it's not automatically it create a directory
 echo "Script started executed at: $(date)" | tee -a $LOG_FILE  #TO APPEND THE ECHO STATEMENT IN LOGS FILE
 
@@ -44,3 +44,7 @@ systemctl enable redis &>>$LOG_FILE
 VALIDATE $? "Enabling Redis"
 systemctl start redis &>>$LOG_FILE
 VALIDATE $? "Starting Redis"
+
+END_TIME=$(date +%s)
+TOTAL_TIME=$(( $END_TIME - $START_TIME))
+echo -e "Script executed in: $Y $TOTAL_TIME Seconds $N"
