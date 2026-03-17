@@ -13,7 +13,7 @@ LOGS_FOLDER="/var/log/shell-script"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log  --> giving full path here 
 START_TIME=$(date +%s)
-SCRIPT_DIR=$(PWD)
+SCRIPT_DIR=$PWD
 mkdir -p $LOGS_FOLDER   # -p checks already directory is there or not, if it's not automatically it create a directory
 echo "Script started executed at: $(date)" | tee -a $LOG_FILE  #TO APPEND THE ECHO STATEMENT IN LOGS FILE
 
@@ -31,15 +31,15 @@ VALIDATE(){ # funtions receive inputs through args just like shell script args
     fi 
 }
 
-cp $SCRIPT_DIR/rabbitmq.repo vim /etc/yum.repos.d/rabbitmq.repo
+cp $SCRIPT_DIR/rabbitmq.repo vim /etc/yum.repos.d/rabbitmq.repo &>>$LOG_FILE
 VALIDATE $? "Adding RabbitMQ repo"
-dnf install rabbitmq-server -y
+dnf install rabbitmq-server -y &>>$LOG_FILE
 VALIDATE $? "Installing RabbitMQ Server"
-systemctl enable rabbitmq-server
+systemctl enable rabbitmq-server &>>$LOG_FILE
 VALIDATE $? "Enabling RabbitMQ Server"
-systemctl start rabbitmq-server
+systemctl start rabbitmq-server &>>$LOG_FILE
 VALIDATE $? "Starting RabbitMQ"
-rabbitmqctl add_user roboshop roboshop123
+rabbitmqctl add_user roboshop roboshop123 &>>$LOG_FILE
 rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
 VALIDATE $? "Setting up Permissions"
 
